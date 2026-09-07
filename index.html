@@ -12,7 +12,7 @@
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
        -webkit-text-size-adjust:100%;padding-bottom:40px;}
-  header{position:sticky;top:0;z-index:10;background:var(--panel-solid);border-bottom:1px solid var(--line);
+  header{position:fixed;top:0;left:0;right:0;z-index:10;background:var(--panel-solid);border-bottom:1px solid var(--line);
          padding:14px 16px 10px;}
   h1{font-size:17px;margin:0 0 2px;}
   .sub{font-size:12px;color:var(--muted);}
@@ -87,7 +87,7 @@ const SORTS = [
   {key:'authenticity', label:'Authentic', dir:-1},
   {key:'healthy', label:'Healthy', dir:-1},
 ];
-let currentLeg = LEGS[0].id;
+let currentLeg = (LEGS.find(l=>l.id==='ljubljana') || LEGS[0]).id;
 let currentSort = 'dist';
 let currentCat = 'All';
 
@@ -160,6 +160,10 @@ function render(){
     b.addEventListener('click', ()=>{ currentCat=b.dataset.cat; render(); }));
   document.querySelectorAll('[data-menu]').forEach(b=>
     b.addEventListener('click', ()=>{ openMenu(b.dataset.menu); }));
+
+  // header is position:fixed (not sticky) so it can never scroll away on iOS Safari,
+  // where sticky has historically been unreliable -- push cards down to clear it instead.
+  document.getElementById('cards').style.marginTop = document.querySelector('header').offsetHeight + 'px';
 }
 
 function openMenu(slug){
